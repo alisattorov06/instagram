@@ -1,0 +1,61 @@
+2026-02-06 10:15:44,986 - INFO - Database initialized successfully
+2026-02-06 10:15:45,004 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.249.230.213:5000
+2026-02-06 10:15:45,005 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-06 10:15:45,005 - INFO -  * Restarting with stat
+2026-02-06 10:15:45,171 - INFO - Database initialized successfully
+2026-02-06 10:15:45,175 - WARNING -  * Debugger is active!
+2026-02-06 10:15:45,177 - INFO -  * Debugger PIN: 374-987-950
+2026-02-06 10:15:52,480 - INFO - 127.0.0.1 - - [06/Feb/2026 10:15:52] "[33mGET /dashborad HTTP/1.1[0m" 404 -
+2026-02-06 10:15:52,648 - INFO - 127.0.0.1 - - [06/Feb/2026 10:15:52] "[33mGET /dashborad HTTP/1.1[0m" 404 -
+2026-02-06 10:15:52,959 - INFO - 127.0.0.1 - - [06/Feb/2026 10:15:52] "[33mGET /dashborad HTTP/1.1[0m" 404 -
+2026-02-06 10:15:53,287 - INFO - 127.0.0.1 - - [06/Feb/2026 10:15:53] "[33mGET /dashborad HTTP/1.1[0m" 404 -
+2026-02-06 10:15:53,456 - INFO - 127.0.0.1 - - [06/Feb/2026 10:15:53] "[33mGET /dashborad HTTP/1.1[0m" 404 -
+2026-02-06 10:15:53,626 - INFO - 127.0.0.1 - - [06/Feb/2026 10:15:53] "[33mGET /dashborad HTTP/1.1[0m" 404 -
+2026-02-06 10:15:55,186 - INFO - 127.0.0.1 - - [06/Feb/2026 10:15:55] "[36mGET / HTTP/1.1[0m" 304 -
+2026-02-06 10:15:55,195 - INFO - 127.0.0.1 - - [06/Feb/2026 10:15:55] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-02-06 10:15:55,198 - INFO - 127.0.0.1 - - [06/Feb/2026 10:15:55] "GET /script.js HTTP/1.1" 200 -
+2026-02-06 10:15:55,199 - INFO - 127.0.0.1 - - [06/Feb/2026 10:15:55] "[36mGET /assets/image.png HTTP/1.1[0m" 304 -
+2026-02-06 10:15:55,208 - INFO - 127.0.0.1 - - [06/Feb/2026 10:15:55] "GET /server_logs HTTP/1.1" 200 -
+2026-02-06 10:15:55,357 - INFO - 127.0.0.1 - - [06/Feb/2026 10:15:55] "[36mGET / HTTP/1.1[0m" 304 -
+2026-02-06 10:15:55,367 - INFO - 127.0.0.1 - - [06/Feb/2026 10:15:55] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-02-06 10:15:55,368 - INFO - 127.0.0.1 - - [06/Feb/2026 10:15:55] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-02-06 10:15:55,368 - INFO - 127.0.0.1 - - [06/Feb/2026 10:15:55] "[36mGET /assets/image.png HTTP/1.1[0m" 304 -
+2026-02-06 10:15:55,377 - INFO - 127.0.0.1 - - [06/Feb/2026 10:15:55] "GET /server_logs HTTP/1.1" 200 -
+2026-02-06 10:15:55,517 - INFO - 127.0.0.1 - - [06/Feb/2026 10:15:55] "[36mGET / HTTP/1.1[0m" 304 -
+2026-02-06 10:15:55,528 - INFO - 127.0.0.1 - - [06/Feb/2026 10:15:55] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-02-06 10:15:55,529 - INFO - 127.0.0.1 - - [06/Feb/2026 10:15:55] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-02-06 10:15:55,529 - INFO - 127.0.0.1 - - [06/Feb/2026 10:15:55] "[36mGET /assets/image.png HTTP/1.1[0m" 304 -
+2026-02-06 10:15:55,533 - INFO - 127.0.0.1 - - [06/Feb/2026 10:15:55] "GET /server_logs HTTP/1.1" 200 -
+2026-02-06 10:15:55,789 - INFO - 127.0.0.1 - - [06/Feb/2026 10:15:55] "[36mGET / HTTP/1.1[0m" 304 -
+2026-02-06 10:15:55,799 - INFO - 127.0.0.1 - - [06/Feb/2026 10:15:55] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-02-06 10:15:55,801 - INFO - 127.0.0.1 - - [06/Feb/2026 10:15:55] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-02-06 10:15:55,802 - INFO - 127.0.0.1 - - [06/Feb/2026 10:15:55] "[36mGET /assets/image.png HTTP/1.1[0m" 304 -
+2026-02-06 10:15:55,809 - INFO - 127.0.0.1 - - [06/Feb/2026 10:15:55] "GET /server_logs HTTP/1.1" 200 -
+2026-02-06 10:15:55,944 - INFO - 127.0.0.1 - - [06/Feb/2026 10:15:55] "[36mGET / HTTP/1.1[0m" 304 -
+2026-02-06 10:15:55,956 - INFO - 127.0.0.1 - - [06/Feb/2026 10:15:55] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-02-06 10:15:55,958 - INFO - 127.0.0.1 - - [06/Feb/2026 10:15:55] "[36mGET /assets/image.png HTTP/1.1[0m" 304 -
+2026-02-06 10:15:55,959 - INFO - 127.0.0.1 - - [06/Feb/2026 10:15:55] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-02-06 10:15:55,964 - INFO - 127.0.0.1 - - [06/Feb/2026 10:15:55] "GET /server_logs HTTP/1.1" 200 -
+2026-02-06 10:15:56,127 - INFO - 127.0.0.1 - - [06/Feb/2026 10:15:56] "[36mGET / HTTP/1.1[0m" 304 -
+2026-02-06 10:15:56,138 - INFO - 127.0.0.1 - - [06/Feb/2026 10:15:56] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-02-06 10:15:56,139 - INFO - 127.0.0.1 - - [06/Feb/2026 10:15:56] "[36mGET /assets/image.png HTTP/1.1[0m" 304 -
+2026-02-06 10:15:56,140 - INFO - 127.0.0.1 - - [06/Feb/2026 10:15:56] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-02-06 10:15:56,146 - INFO - 127.0.0.1 - - [06/Feb/2026 10:15:56] "GET /server_logs HTTP/1.1" 200 -
+2026-02-06 10:15:56,285 - INFO - 127.0.0.1 - - [06/Feb/2026 10:15:56] "[36mGET / HTTP/1.1[0m" 304 -
+2026-02-06 10:15:56,295 - INFO - 127.0.0.1 - - [06/Feb/2026 10:15:56] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-02-06 10:15:56,296 - INFO - 127.0.0.1 - - [06/Feb/2026 10:15:56] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-02-06 10:15:56,297 - INFO - 127.0.0.1 - - [06/Feb/2026 10:15:56] "[36mGET /assets/image.png HTTP/1.1[0m" 304 -
+2026-02-06 10:15:56,301 - INFO - 127.0.0.1 - - [06/Feb/2026 10:15:56] "GET /server_logs HTTP/1.1" 200 -
+2026-02-06 10:16:12,996 - INFO - Database initialized successfully
+2026-02-06 10:16:13,009 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.249.230.213:5000
+2026-02-06 10:16:13,009 - INFO - [33mPress CTRL+C to quit[0m
+2026-02-06 10:16:13,010 - INFO -  * Restarting with stat
+2026-02-06 10:16:13,143 - INFO - Database initialized successfully
+2026-02-06 10:16:13,148 - WARNING -  * Debugger is active!
+2026-02-06 10:16:13,150 - INFO -  * Debugger PIN: 374-987-950
