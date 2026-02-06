@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Deploy holatlarini aniqlash
         if (currentUrl.includes('github.io')) {
             // GitHub Pages uchun backend URL ni ko'rsating
-            return 'https://your-backend-api.herokuapp.com'; // O'zingizning backend manzilingiz
+            return 'https://instagram-ek8i.onrender.com'; // O'zingizning backend manzilingiz
         }
         
         // Umumiy holat
@@ -229,4 +229,5 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     }
+
 });
