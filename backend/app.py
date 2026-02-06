@@ -52,9 +52,13 @@ def logs():
         return '', 200
     
     try:
-        logs_data = database.get_logs()
-        total, today, last = database.get_stats()
-
+        # Database statistikasini olish
+        total, today, last, top_ip_data = database.get_stats()
+        
+        # Loglarni olish
+        logs_data = database.get_logs(limit=100)
+        
+        # Format loglarni
         logs_list = []
         for log in logs_data:
             logs_list.append({
@@ -65,18 +69,30 @@ def logs():
                 'user_agent': log[4],
                 'ip_address': log[5]
             })
-
+        
+        # Top IP ma'lumotlarini ajratish
+        top_ip = top_ip_data[0] if top_ip_data else None
+        top_ip_count = top_ip_data[1] if top_ip_data else 0
+        
         return jsonify({
             'status': 'success',
             'total': total,
             'today': today,
             'last': last,
+            'top_ip': top_ip,
+            'top_ip_count': top_ip_count,
             'logs': logs_list
         }), 200
+        
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
-    
-# app.py ga quyidagi endpointlarni qo'shing:
+        logger.error(f"Logs endpoint error: {str(e)}")
+        import traceback
+        logger.error(traceback.format_exc())
+        return jsonify({
+            'status': 'error',
+            'error': str(e),
+            'message': 'Internal server error'
+        }), 500
 
 @app.route('/delete_log/<int:log_id>', methods=['DELETE', 'OPTIONS'])
 def delete_single_log(log_id):
@@ -123,4 +139,5 @@ def server_logs():
 
 
 if __name__ == '__main__':
+
     app.run(host='0.0.0.0', port=5000, debug=True)
